@@ -8,6 +8,30 @@
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/jwyGithub/oh-my-dev/next/centos/bbr_setup.sh)"
 ```
 
+2. 更换 镜像源
+
+```sh
+bash <(curl -sSL https://raw.githubusercontent.com/SuperManito/LinuxMirrors/main/ChangeMirrors.sh)
+```
+
+3. Oracle Cloud centos 8 stream
+
+```sh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/jwyGithub/oh-my-dev/next/centos/oc_init.sh)"
+```
+
+4. 初始化 docker 容器
+
+```sh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/jwyGithub/oh-my-dev/next/docker/init.sh)"
+```
+
+5. ssl
+
+```sh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/jwyGithub/oh-my-dev/next/centos/cert.sh)"
+```
+
 ## zsh
 
 1. install zsh
