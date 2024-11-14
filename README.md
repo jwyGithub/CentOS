@@ -1,9 +1,11 @@
-# my development configuration
+# Development configuration
 
 ## CentOS
 
+1. 开启 BBR
+
 ```sh
-wget -O- https://cdn.jsdelivr.net/gh/jwyGithub/oh-my-dev/centos/repo.sh | sh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/jwyGithub/oh-my-dev/main/centos/bbr_setup.sh)"
 ```
 
 ## zsh
