@@ -5,7 +5,7 @@
 1. 开启 BBR
 
 ```sh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/jwyGithub/oh-my-dev/main/centos/bbr_setup.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/jwyGithub/oh-my-dev/next/centos/bbr_setup.sh)"
 ```
 
 ## zsh
