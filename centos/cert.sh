@@ -106,7 +106,7 @@ function cloudflare_ssl() {
     if [ -z "$CF_Domain" ] || [ -z "$cert_path" ] || [ -z "$CF_Key" ] || [ -z "$CF_Email" ]; then
         log_error "所有参数都不能为空"
         exit 1
-    }
+    fi
 
     # 检查证书路径
     if [ ! -d "$cert_path" ]; then
