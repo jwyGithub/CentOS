@@ -79,11 +79,21 @@ function verify_domain() {
 }
 
 # 检查证书是否存在
+# 检查证书是否存在
 function check_cert_exists() {
     local domain=$1
     if [ -d "$HOME/.acme.sh/${domain}" ]; then
         log_warning "域名 ${domain} 的证书已存在"
-        return 0
+        read -p "是否删除旧的证书并继续？[Y/n] " answer
+        answer=${answer:-Y}  # 默认为Y
+        if [[ "${answer,,}" == "y" ]]; then
+            log_info "删除旧的证书..."
+            rm -rf "$HOME/.acme.sh/${domain}"
+            return 1
+        else
+            log_info "保留旧证书,退出操作"
+            exit 0
+        fi
     fi
     return 1
 }
@@ -122,11 +132,9 @@ function cloudflare_ssl() {
 
     # 检查证书是否已存在
     if check_cert_exists "$CF_Domain"; then
-        read -p "是否重新生成证书？(y/n) " answer
-        if [[ "$answer" != "y" ]]; then
-            log_info "取消证书生成"
-            exit 0
-        fi
+        log_info "旧证书已删除，继续生成证书..."
+    else
+        log_info "没有旧证书，继续生成证书..."
     fi
 
     # 设置Cloudflare API
@@ -136,7 +144,10 @@ function cloudflare_ssl() {
     log_info "开始生成证书..."
 
     # 生成证书
-    if ~/.acme.sh/acme.sh --issue --dns dns_cf -d ${CF_Domain} -d *.${CF_Domain} --log; then
+    if ~/.acme.sh/acme.sh --issue --dns dns_cf -d ${CF_Domain} -d *.${CF_Domain} --log \
+        --debug 2 2>&1 | while read -r line; do
+        log_info "$line"
+    done; then
         log_success "证书生成成功"
     else
         log_error "证书生成失败"
@@ -151,11 +162,21 @@ function cloudflare_ssl() {
         --key-file ${cert_path}/private.key \
         --fullchain-file ${cert_path}/fullchain.cer; then
         
+        # 转换私钥为PKCS8格式
+        log_info "转换私钥为PKCS8格式..."
+        if openssl pkcs8 -topk8 -nocrypt -in ${cert_path}/private.key -out ${cert_path}/private_pkcs8.key; then
+            log_success "私钥转换成功"
+        else
+            log_error "私钥转换失败"
+            exit 1
+        fi
+        
         log_success "证书安装完成"
         log_info "证书路径: ${cert_path}"
         log_info "CA证书: ${cert_path}/ca.cer"
         log_info "证书文件: ${cert_path}/cert.crt"
         log_info "私钥文件: ${cert_path}/private.key"
+        log_info "PKCS8私钥文件: ${cert_path}/private_pkcs8.key"
         log_info "完整链: ${cert_path}/fullchain.cer"
     else
         log_error "证书安装失败"
