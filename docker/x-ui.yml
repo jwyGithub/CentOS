@@ -1,0 +1,13 @@
+services:
+  xui:
+    image: enwaiax/x-ui
+    container_name: x-ui
+    volumes:
+      - /root/x-ui/db/:/etc/x-ui/
+      - /root/cert/:/root/cert/
+    ports:
+      - "9543:54321"
+      - "9000:9000"
+      - "9001:9001"
+      - "9002:9002"
+    restart: unless-stopped
