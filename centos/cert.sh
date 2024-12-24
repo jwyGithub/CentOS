@@ -7,6 +7,19 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# 检测系统类型和版本
+function check_system() {
+    if [ -f /etc/redhat-release ]; then
+        if grep -q "CentOS Linux release 7" /etc/redhat-release; then
+            echo "centos7"
+        else
+            echo "other"
+        fi
+    else
+        echo "other"
+    fi
+}
+
 # 日志函数
 function log_info() {
     echo -e "${BLUE}[INFO] $1${NC}"
@@ -28,11 +41,26 @@ function log_success() {
 function install_socat() {
     if ! command -v socat &> /dev/null; then
         log_info "正在安装socat..."
-        if dnf install -y socat; then
-            log_success "socat安装成功"
+        
+        # 检测系统类型
+        local system_type=$(check_system)
+        
+        if [ "$system_type" == "centos7" ]; then
+            # CentOS 7 使用yum
+            if yum install -y socat; then
+                log_success "socat安装成功"
+            else
+                log_error "socat安装失败"
+                exit 1
+            fi
         else
-            log_error "socat安装失败"
-            exit 1
+            # 其他系统使用dnf
+            if dnf install -y socat; then
+                log_success "socat安装成功"
+            else
+                log_error "socat安装失败"
+                exit 1
+            fi
         fi
     else
         log_info "socat已安装，跳过"
